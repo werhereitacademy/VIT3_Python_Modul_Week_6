@@ -1,0 +1,95 @@
+from abc import ABC, abstractmethod
+from datetime import datetime, timedelta
+
+class Task(ABC):
+    def __init__(self, name, deadline):
+        self.name = name
+        self.deadline = deadline
+
+    @abstractmethod
+    def display_details(self):
+        pass
+
+class PersonalTasks(Task):
+    def __init__(self, name, deadline, priority, color_code):
+        super().__init__(name, deadline)
+        self.priority = priority
+        self.color_code = color_code
+
+    def display_details(self):
+        print(f"Task: {self.name}, Priority: {self.priority}, Days left: {self.deadline}, Color code: {self.color_code}")
+
+class WorkTasks(Task):
+    def __init__(self, name, deadline, priority, color_code):
+        super().__init__(name, deadline)
+        self.priority = priority
+        self.color_code = color_code
+
+    def display_details(self):
+        print(f"Task: {self.name}, Priority: {self.priority}, Days left: {self.deadline}, Color code: {self.color_code}")
+
+class TaskManager:
+    def __init__(self):
+        self.tasks = []
+
+    def add_task(self, task):
+        self.tasks.append(task)
+
+    def display_tasks(self):
+        for task in self.tasks:
+            task.display_details()
+
+class TaskScheduling:
+    @staticmethod
+    def define_personal_task(name, deadline, priority, color_code):
+        today = datetime.now()
+        # if deadline < today:
+        #     raise ValueError("The deadline cannot be in the past.")
+        if deadline.lower() == "today":
+            end = (today).day
+        elif deadline.lower() == "tomorrow":
+            end = (today + timedelta(days=1)).day
+        elif deadline.lower() == "one week later":
+            end = (today + timedelta(weeks=1)).day
+        else:
+            end = deadline
+        return PersonalTasks(name, end, priority, color_code)
+
+    @staticmethod
+    def define_work_task(name, deadline, priority, color_code):
+        today = datetime.now()
+        #if deadline < today:
+            #raise ValueError("The deadline cannot be in the past.")
+        if deadline.lower() == "today":
+            end = (today).day
+        elif deadline.lower() == "tomorrow":
+            end = (today + timedelta(days=1)).day
+        elif deadline.lower() == "one week later":
+            end = (today + timedelta(weeks=1)).day
+        else:
+            end = deadline
+        return WorkTasks(name, end, priority, color_code)
+    
+"""The @staticmethod decorator ensures that the methods defined in the TaskScheduling and TaskEditing classes are static. 
+These methods can be called without needing an instance of the class and can utilize other elements within the class."""
+
+class SetTaskPriority:
+    @staticmethod
+    def adjust_task_priority(task, new_priority):
+        if isinstance(task, PersonalTasks):
+            task.priority = new_priority
+    
+# The isinstance() function checks whether an object is an instance of a specific class. 
+# If the task variable is an instance of the PersonalTasks class, meaning the task is a personal task, 
+# then the task's priority is changed to new_priority.
+            
+tm = TaskManager()
+ts = TaskScheduling()
+
+personal_task1 = ts.define_personal_task(input("Personal task name:"), input("Deadline: (-today, tomorrow, one week later- format)"), input("Priority: (low, medium, high)"), input("Color code:"))
+work_task1 = ts.define_work_task(input("Work task name:"), input("Deadline: (-today, tomorrow, one week later- format)"), input("Priority: (low, medium, high)"), input("Color code:"))
+
+tm.add_task(personal_task1)
+tm.add_task(work_task1)
+
+print(tm.display_tasks())
