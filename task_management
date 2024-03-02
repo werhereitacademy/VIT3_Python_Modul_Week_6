@@ -1,0 +1,123 @@
+from abc import ABC, abstractmethod
+from datetime import datetime, timedelta
+
+# Task class
+class Task(ABC):
+    def __init__(self, description, deadline):
+        self.description = description
+        self.deadline = deadline
+        self.status = "Pending"
+    
+    @abstractmethod
+    def display_task_info(self):
+        pass
+
+# PersonalTask class
+class PersonalTask(Task):
+    def __init__(self, description, deadline):
+        super().__init__(description, deadline)
+        self.priority = "Low"
+    
+    def display_task_info(self):
+        print(f"Personal Task: {self.description}, Deadline: {self.deadline}, Priority: {self.priority}, Status: {self.status}")
+
+# WorkTask class
+class WorkTask(Task):
+    def __init__(self, description, deadline):
+        super().__init__(description, deadline)
+        self.priority = "High"
+    
+    def display_task_info(self):
+        print(f"Work Task: {self.description}, Deadline: {self.deadline}, Priority: {self.priority}, Status: {self.status}")
+
+# TaskManagement class
+class TaskManagement:
+    def __init__(self):
+        self.taskList = []
+    
+    def add_task(self, task):
+        self.taskList.append(task)
+    
+    def display_tasks(self):
+        for task in self.taskList:
+            task.display_task_info()
+
+# TaskScheduling class
+class TaskScheduling:
+    @staticmethod
+    def create_personal_task(description, deadline):
+        return PersonalTask(description, deadline)
+    
+    @staticmethod
+    def create_work_task(description, deadline):
+        return WorkTask(description, deadline)
+
+# TaskEditing class
+class TaskEditing:
+    @staticmethod
+    def update_task_status(task, new_status):
+        task.status = new_status
+    
+    @staticmethod
+    def update_task_priority(task, new_priority):
+        task.priority = new_priority
+    
+    @staticmethod
+    def update_task_deadline(task, new_deadline):
+        task.deadline = new_deadline
+    
+    @staticmethod
+    def search_task(task_list, keyword):
+        for task in task_list:
+            if keyword.lower() in task.description.lower():
+                return task
+        raise Exception("Task not found.")
+
+    @staticmethod
+    def remove_task(task_list, task):
+        task_list.remove(task)
+
+# TaskTracking class
+class TaskTracking:
+    @staticmethod
+    def get_task_status(task):
+        return task.status
+    
+    @staticmethod
+    def mark_task_completed(task):
+        task.status = "Completed"
+
+# Special Keywords Dictionary
+SPECIAL_KEYWORDS = {
+    "today": datetime.now(),
+    "tomorrow": datetime.now() + timedelta(days=1),
+    "next week": datetime.now() + timedelta(weeks=1)
+}
+
+# Example usage
+if __name__ == "__main__":
+    tm = TaskManagement()
+    task_sched = TaskScheduling()
+
+    # Creating tasks
+    task1 = task_sched.create_personal_task("Finish homework", SPECIAL_KEYWORDS["tomorrow"])
+    task2 = task_sched.create_work_task("Prepare presentation", SPECIAL_KEYWORDS["today"])
+
+    # Adding tasks to TaskManagement
+    tm.add_task(task1)
+    tm.add_task(task2)
+
+    # Displaying tasks
+    tm.display_tasks()
+
+    # Editing tasks
+    TaskEditing.update_task_status(task1, "In Progress")
+    TaskEditing.update_task_deadline(task2, SPECIAL_KEYWORDS["next week"])
+
+    # Displaying tasks after editing
+    tm.display_tasks()
+
+    # Tracking tasks
+    print("Task status:", TaskTracking.get_task_status(task1))
+    TaskTracking.mark_task_completed(task1)
+    print("Task status after marking completed:", TaskTracking.get_task_status(task1))
